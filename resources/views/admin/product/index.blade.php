@@ -6,6 +6,7 @@
         {{ session()->get('success') }}
     </div>
 @endif
+
     <div class="card">
       <div class="card-header card-header-primary">
        <a href="{{route('product.create')}}">
@@ -56,14 +57,19 @@
                         type="submit" class="btn btn-success"
                         ><i class="fa fa-edit"
                             ></i></button></a>
-                            <form method="post" action="{{ route('product.destroy', $product->id) }}">
+                            <button class="deleteRecord btn btn-danger" data-id="{{ $product->id }}" ><i class="fa fa-trash"
+                              ></i></button>
+
+                          
+                         
+                            {{-- <form method="post" action="{{ route('product.destroy', $product->id) }}">
                                 @csrf
                                 @method('DELETE')
                             <button
                                 type="submit" class="btn btn-danger"
                                ><i class="fa fa-trash"
                                     ></i></button>
-                                </form>
+                                </form> --}}
                 </td>
               
               </tr>
@@ -79,4 +85,40 @@
       </div>
     </div>
   </div>
+ 
+@endsection
+@section('script')
+<script type="text/javascript">
+ $(".deleteRecord").click(function(){
+
+  if(!confirm("Do you really want to do this?")) {
+       return false;
+     }
+    var id = $(this).data("id");
+    var token = $("meta[name='csrf-token']").attr("content");
+   
+    $.ajax(
+    {
+        url: "product/"+id,
+        type: 'DELETE',
+        data: {
+            "id": id,
+            "_token": token,
+        },
+        success: function (data){
+          if(data.success){
+            location.reload();
+            Swal.fire(
+              'Remind!',
+              'Company deleted successfully!',
+              'success'
+            )
+          }
+            
+        }
+    });
+    return false;
+   
+});
+</script>
 @endsection
